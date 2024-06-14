@@ -222,6 +222,21 @@ catch {
 Write-host 'AIB Customization: EndRegion SAP'
 #endregion SAP
 
+#install SAP latest 
+Write-host 'AIB Customization: Install SAP latest'
+try {
+    Start-Process -filepath "C:\apps\AVD_SD_Apps\SAP_1\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "SAP latest installed successfully"
+    write-host "SAP latest installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing SAP latest: $ErrorMessage"
+    write-host "Error installing SAP latest: $ErrorMessage"
+}
+
+
+
 #install VCC wallpaper
 Write-host 'AIB Customization: Configure Wallpaper'
 try {
@@ -306,24 +321,7 @@ catch {
 Write-host 'AIB Customization: EndRegion CPP client'
 #endregion CPP client
 
-
-# #install IBM personal communications powershell.
-# Write-host 'AIB Customization: Install IBM personal communications powershell.'
-# try {
-#     Start-Process -filepath "C:\apps\AVD_SD_Apps\IBM Personal Communications\Deploy-Application.exe" -Wait -ErrorAction Stop 
-#     write-log "IBM personal communications powershell. installed successfully"
-#     write-host "IBM personal communications powershell. installed successfully"
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installing IBM personal communications powershell: $ErrorMessage"
-#     write-host "Error installing IBM personal communications powershell: $ErrorMessage"
-# }
-
-# Write-host 'AIB Customization: EndRegion IBM personal communications powershell.'
-# #endregion IBM personal communications powershell.
-
-install IBM
+#install IBM
 Write-host 'AIB Customization: Install IBM'
 try {
    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList "/i","`"C:\apps\AVD_SD_Apps\IBM\a2\source\Configuration\3270_hosts.msi`"","TRANSFORMS=`"C:\apps\AVD_SD_Apps\IBM\a3\source\Configuration\3270_hosts.mst`"","/qn","/l*v","c:\windows\temp\3270_hosts.log"
@@ -354,9 +352,6 @@ catch {
 Write-host 'AIB Customization: EndRegion IBM'
 #endregion IBM a2
 
-
-
-
 #install IBM
 Write-host 'AIB Customization: Install IBM'
 try {
@@ -371,9 +366,6 @@ catch {
 Write-host 'AIB Customization: EndRegion IBM'
 #endregion IBM a3
 
-
-
-
 #install AVDBG
 Write-host 'AIB Customization: Install AVDBG'
 try {
@@ -386,22 +378,6 @@ catch {
 }
 Write-host 'AIB Customization: EndRegion AVDBG'
 #endregion AVDBG 
-
-# #installfslogix
-# write-host 'AIB customization: install fslogix'
-# try{
-# Invoke-WebRequest -Uri 'https://aka.ms/fslogix_download' -outfile   "C:\apps\AVD_SD_Apps\fslogix.zip"
-# Start-Sleep -Seconds 20
-# Expand-Archive -Path "C:\apps\AVD_SD_Apps\fslogix.zip" -DestinationPath "C:\apps\AVD_SD_Apps\fslogix\"  -Force
-# Invoke-Expression -Command "C:\apps\AVD_SD_Apps\fslogix\x64\Release\FSLogixAppsSetup.exe /install /quiet /norestart"
-# }
-# catch{
-#     $ErrorMessage = $_.Exception.message
-    
-#     write-host "Error FSLOGIX: $ErrorMessage"
-# }
-# write-host  'AIB customization: end region fslogix'
-# # #endregion fslogix
 
 #removebuiltinapps
 $apps=@(     
