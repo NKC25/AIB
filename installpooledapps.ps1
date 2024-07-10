@@ -171,20 +171,20 @@ catch {
 Write-host 'AIB Customization: endregion defender ATP'
 
 # install optimized teams.
-# Write-host 'AIB Customization: install optimized teams'
+Write-host 'AIB Customization: install optimized teams'
 
-# try {
-#     Start-Process -filepath "C:\apps\AVDapps\AVDTeams\DistributionFiles\Windows\Microsoft Teams for AVD 1.5\Deploy-Application.exe" -Wait -ErrorAction Stop 
-#     write-log "AVD Teams installed successfully."
-#     write-host "AVD Teams installed successfully."
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installing AVD Teams: $ErrorMessage"
-#     write-host "Error installing AVD Teams: $ErrorMessage"
-# }
-# #endregion of teams.
-# Write-host 'AIB Customization: endregion optimized teams'
+try {
+    Start-Process -filepath "C:\apps\AVDapps\AVDTeams\DistributionFiles\Windows\Microsoft New Teams for VDI 2.0\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "AVD Teams installed successfully."
+    write-host "AVD Teams installed successfully."
+      }
+ catch {
+     $ErrorMessage = $_.Exception.message
+     write-log "Error installing AVD Teams: $ErrorMessage"
+     write-host "Error installing AVD Teams: $ErrorMessage"
+ }
+ #endregion of teams.
+ Write-host 'AIB Customization: endregion optimized teams'
 
 #install VCC wallpaper
 Write-host 'AIB Customization: Configure Wallpaper'
