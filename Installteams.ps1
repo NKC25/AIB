@@ -1,3 +1,4 @@
+#testing the pull request. 
 $path = "c:\temp"
  if([IO.Directory]::Exists($path))
 {
