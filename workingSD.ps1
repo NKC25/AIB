@@ -143,20 +143,20 @@ catch {
 
 
 
-#install Java
-# Write-host 'AIB Customization: Install Java'
-# try {
+install Java
+Write-host 'AIB Customization: Install Java'
+try {
     
-#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVD_SD_Apps\Java_8\source\jre1.8.0_72.msi", TRANSFORMS="C:\apps\AVD_SD_Apps\Java_8\source\Java_8_Update_72_x86_8.0.720.15_W10.mst" , '/qn','/l*v',  "C:\Windows\Temp\Java-INSTALL.log"
-#     Write-Log "successfully installed Java"
-#     Write-host "successfully installed Java"
+    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVD_SD_Apps\Java_8\source\jre1.8.0_72.msi", TRANSFORMS="C:\apps\AVD_SD_Apps\Java_8\source\Java_8_Update_72_x86_8.0.720.15_W10.mst" , '/qn','/l*v',  "C:\Windows\Temp\Java-INSTALL.log"
+    Write-Log "successfully installed Java"
+    Write-host "successfully installed Java"
 
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installed Java: $ErrorMessage"
-#     Write-Log "Error installed Java: $ErrorMessage"
-# }
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installed Java: $ErrorMessage"
+    Write-Log "Error installed Java: $ErrorMessage"
+}
 
 #endregion Java
 Write-host 'AIB Customization: endregion Laps'
