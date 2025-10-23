@@ -128,23 +128,39 @@ catch {
 
 
 
-#install Java
-Write-host 'AIB Customization: Install Java'
-try {
+# #install Java
+# Write-host 'AIB Customization: Install Java'
+# try {
     
-    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Java_8\source\jre1.8.0_72.msi", TRANSFORMS="C:\apps\AVDapps\Java_8\source\Java_8_Update_72_x86_8.0.720.15_W10.mst" , '/qn','/l*v',  "C:\Windows\Temp\Java-INSTALL.log"
-    Write-Log "successfully installed Java"
-    Write-host "successfully installed Java"
+#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Java_8\source\jre1.8.0_72.msi", TRANSFORMS="C:\apps\AVDapps\Java_8\source\Java_8_Update_72_x86_8.0.720.15_W10.mst" , '/qn','/l*v',  "C:\Windows\Temp\Java-INSTALL.log"
+#     Write-Log "successfully installed Java"
+#     Write-host "successfully installed Java"
+
+#     }
+# catch {
+#     $ErrorMessage = $_.Exception.message
+#     write-log "Error installed Java: $ErrorMessage"
+#     Write-Log "Error installed Java: $ErrorMessage"
+# }
+
+# #endregion Java
+# Write-host 'AIB Customization: endregion Java'
+
+#install Azul Zulu JDK
+Write-host 'AIB Customization: Install Azul Zulu Java'
+try {
+    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
+    Write-Log "successfully installed Azul Zulu Java"
+    Write-host "successfully installed Azul Zulu Java"
 
     }
 catch {
     $ErrorMessage = $_.Exception.message
-    write-log "Error installed Java: $ErrorMessage"
-    Write-Log "Error installed Java: $ErrorMessage"
+    write-log "Error installed Azul Zulu Java: $ErrorMessage"
+    Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
 }
-
-#endregion Java
-Write-host 'AIB Customization: endregion Java'
+#endregion Azul Zulu Java
+Write-host 'AIB Customization: endregion Azul Zulu Java'
 #Onboard Windows Defender ATP.
 Write-host 'AIB Customization: Configure Defender ATP'
 try{
