@@ -144,7 +144,7 @@ catch {
 #install Azul Zulu JDK
 Write-host 'AIB Customization: Install Azul Zulu Java'
 try {
-    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
+    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVD_SD_Apps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
     Write-Log "successfully installed Azul Zulu Java"
     Write-host "successfully installed Azul Zulu Java"
 
@@ -158,6 +158,37 @@ catch {
 Write-host 'AIB Customization: endregion Azul Zulu Java'
 
 
+
+#install AzulSystemsJavaApplet
+Write-host 'AIB Customization: AzulSystemsJavaApplet  '
+try {
+    Start-Process -filepath "C:\apps\AVD_SD_Apps\AzulSystemsJavaApplet\Files\User\010_full_install.bat" -Wait -ErrorAction Stop 
+    write-log "AzulSystemsJavaApplet installed successfully"
+    write-host "AzulSystemsJavaApplet installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing AzulSystemsJavaApplet : $ErrorMessage"
+    write-host "Error installing AzulSystemsJavaApplet : $ErrorMessage"
+}
+#endregion
+Write-host 'AIB Customization: endregion AzulSystemsJavaApplet'
+
+#install SIPlusPolicyCopy
+Write-host 'AIB Customization: SIPlusPolicyCopy  '
+try {
+    Start-Process -filepath "C:\apps\AVD_SD_Apps\SIPlusPolicyCopy\DistributionFiles\Windows\Azul Systems Java Applet - SIPlus 1.0\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "SIPlusPolicyCopy installed successfully"
+    write-host "SIPlusPolicyCopy installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing SIPlusPolicyCopy : $ErrorMessage"
+    write-host "Error installing SIPlusPolicyCopy : $ErrorMessage"
+}
+#endregion
+Write-host 'AIB Customization: endregion SIPlusPolicyCopy'
+  
 # install Java
 # Write-host 'AIB Customization: Install Java'
 # try {
