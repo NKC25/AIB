@@ -65,6 +65,46 @@ catch {
 #endregion
 Write-host 'AIB Customization: endregion TNS_Names'
 
+
+# install javaapplet fullinstall bat file.
+Write-host 'AIB Customization: javaapplet fullinstall'
+try {
+    Start-Process -filepath "C:\apps\AVDapps\AzulSystemsJavaApplet\Files\User\010_full_install.bat" -Wait -ErrorAction Stop 
+    write-log "Javaapplet installed successfully"
+    write-host "Javaapplet installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing Javaapplet: $ErrorMessage"
+    write-host "Error installing Javaapplet: $ErrorMessage"
+}
+# install siplus file.
+Write-host 'AIB Customization: siplus fullinstall'
+try {
+    Start-Process -filepath "C:\apps\AVDapps\SIPlusPolicyCopy\DistributionFiles\Windows\Azul Systems Java Applet - SIPlus 1.0\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "siplus installed successfully"
+    write-host "siplus installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing siplus: $ErrorMessage"
+    write-host "Error installing siplus: $ErrorMessage"
+}
+
+# install KDPNetPhantomStarter file.
+Write-host 'AIB Customization: KDPNetPhantomStarter '
+try {
+    Start-Process -filepath "C:\apps\AVDapps\KDPNetPhantomStarter\DistributionFiles\Windows\Mindus SARL NetPhantom Starter SSL with Java 7.7\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "KDPNetPhantomStarter installed successfully"
+    write-host "KDPNetPhantomStarter installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing KDPNetPhantomStarter: $ErrorMessage"
+    write-host "Error installing KDPNetPhantomStarter: $ErrorMessage"
+}
+
+
 # #install Cisco Secure Client 5.0.01242
 # Write-host 'AIB Customization: Install Cisco Secure Client 5.0.01242'
 # try {
