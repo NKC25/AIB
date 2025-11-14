@@ -69,7 +69,7 @@ Write-host 'AIB Customization: endregion TNS_Names'
 # install javaapplet fullinstall bat file.
 Write-host 'AIB Customization: javaapplet fullinstall'
 try {
-    Start-Process -filepath "C:\apps\AVDapps\AzulSystemsJavaApplet\Files\User\010_full_install.bat" -Wait -ErrorAction Stop 
+    Start-Process -filepath "C:\apps\AVDapps\AzulSystemsJavaApplet\Deploy-Application.exe" -Wait -ErrorAction Stop 
     write-log "Javaapplet installed successfully"
     write-host "Javaapplet installed successfully"
     }
@@ -187,20 +187,20 @@ catch {
 # Write-host 'AIB Customization: endregion Java'
 
 #install Azul Zulu JDK
-Write-host 'AIB Customization: Install Azul Zulu Java'
-try {
-    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
-    Write-Log "successfully installed Azul Zulu Java"
-    Write-host "successfully installed Azul Zulu Java"
+# Write-host 'AIB Customization: Install Azul Zulu Java'
+# try {
+#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
+#     Write-Log "successfully installed Azul Zulu Java"
+#     Write-host "successfully installed Azul Zulu Java"
 
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installed Azul Zulu Java: $ErrorMessage"
-    Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
-}
-#endregion Azul Zulu Java
-Write-host 'AIB Customization: endregion Azul Zulu Java'
+#     }
+# catch {
+#     $ErrorMessage = $_.Exception.message
+#     write-log "Error installed Azul Zulu Java: $ErrorMessage"
+#     Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
+# }
+# #endregion Azul Zulu Java
+# Write-host 'AIB Customization: endregion Azul Zulu Java'
 #Onboard Windows Defender ATP.
 Write-host 'AIB Customization: Configure Defender ATP'
 try{
