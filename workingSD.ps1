@@ -141,28 +141,28 @@ catch {
 }
 #end region.
 
-#install Azul Zulu JDK
-Write-host 'AIB Customization: Install Azul Zulu Java'
-try {
-    Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVD_SD_Apps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
-    Write-Log "successfully installed Azul Zulu Java"
-    Write-host "successfully installed Azul Zulu Java"
+# #install Azul Zulu JDK
+# Write-host 'AIB Customization: Install Azul Zulu Java'
+# try {
+#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVD_SD_Apps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
+#     Write-Log "successfully installed Azul Zulu Java"
+#     Write-host "successfully installed Azul Zulu Java"
 
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installed Azul Zulu Java: $ErrorMessage"
-    Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
-}
-#endregion Azul Zulu Java
-Write-host 'AIB Customization: endregion Azul Zulu Java'
+#     }
+# catch {
+#     $ErrorMessage = $_.Exception.message
+#     write-log "Error installed Azul Zulu Java: $ErrorMessage"
+#     Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
+# }
+# #endregion Azul Zulu Java
+# Write-host 'AIB Customization: endregion Azul Zulu Java'
 
 
 
 #install AzulSystemsJavaApplet
 Write-host 'AIB Customization: AzulSystemsJavaApplet  '
 try {
-    Start-Process -filepath "C:\apps\AVD_SD_Apps\AzulSystemsJavaApplet\Files\User\010_full_install.bat" -Wait -ErrorAction Stop 
+    Start-Process -filepath "C:\apps\AVD_SD_Apps\AzulSystemsJavaApplet\Deploy-Application.exe" -Wait -ErrorAction Stop 
     write-log "AzulSystemsJavaApplet installed successfully"
     write-host "AzulSystemsJavaApplet installed successfully"
     }
