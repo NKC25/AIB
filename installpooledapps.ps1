@@ -215,21 +215,20 @@ catch {
     Write-Log "Error configuring Windows Defender ATP: $($_.Exception.Message)" -Level "ERROR"
 }
 
-# Install MSI-based applications
-$MSIApplications = @(
-    @{
-        Name = "PuTTY"
-        Path = "$AppBasePath\Putty\OriginalFiles\putty-64bit-0.74-installer.msi"
-        Arguments = @('/i', '/qn', '/l*v', 'C:\Windows\Temp\Putty-INSTALL.log')
+# Install PuTTY (using original working method)
+Write-Log "Installing PuTTY" -Level "INFO"
+try {
+    $PuttyMSI = "$AppBasePath\Putty\OriginalFiles\putty-64bit-0.74-installer.msi"
+    if (Test-Path $PuttyMSI) {
+        Start-Process -FilePath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', $PuttyMSI, '/qn', '/l*v', 'C:\Windows\Temp\Putty-INSTALL.log'
+        Write-Log "PuTTY installed successfully" -Level "INFO"
     }
-)
-
-foreach ($App in $MSIApplications) {
-    Write-Log "Installing MSI application: $($App.Name)" -Level "INFO"
-    $Success = Install-Application -Name $App.Name -ExecutablePath "msiexec.exe" -Arguments ($App.Arguments + $App.Path)
-    if (-not $Success) {
-        Write-Log "Failed to install $($App.Name) via MSI" -Level "ERROR"
+    else {
+        Write-Log "PuTTY MSI not found: $PuttyMSI" -Level "WARNING"
     }
+}
+catch {
+    Write-Log "Error installing PuTTY: $($_.Exception.Message)" -Level "ERROR"
 }
 
 #region Windows Desktop Optimization Tool Integration
