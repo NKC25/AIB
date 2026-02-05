@@ -66,6 +66,21 @@ function Install-MSI {
         Write-Log "$Name (MSI) installed successfully"
     }
 }
+# Install a PowerShell deployment script (e.g., Invoke-AppDeployToolkit.ps1)
+function Install-PSScript {
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][string]$ScriptPath,
+        [string[]]$Arguments
+    )
+    Invoke-Step -Name "Install $Name (PS Script)" -Action {
+        if (-not (Test-Path -LiteralPath $ScriptPath)) { throw "Script not found: $ScriptPath" }
+        $argList = @('-NoProfile','-ExecutionPolicy','Bypass','-File', $ScriptPath)
+        if ($Arguments -and $Arguments.Count -gt 0) { $argList += $Arguments }
+        Start-Process -FilePath powershell.exe -ArgumentList $argList -Wait -ErrorAction Stop
+        Write-Log "$Name installed via PowerShell script successfully"
+    }
+}
 #endregion
 
 Install-App -Name 'AIP' -Path "C:\apps\AVDapps\AIP\DistributionFiles\Windows\Microsoft AIP 2.13.49\Deploy-Application.exe"
@@ -104,7 +119,7 @@ Install-App -Name 'VCC_Fonts' -Path "C:\apps\AVDapps\VCC_Fonts\Deploy-Applicatio
 Write-Host 'AIB Customization: endregion vccfonts'
 
 Install-App -Name 'SAP' -Path "C:\apps\AVDapps\SAP_1\Deploy-Application.exe"
-write-host 'AIB Customization: endregion SAP'
+Write-Host 'AIB Customization: endregion SAP'
 
 Install-App -Name 'LotusNotes' -Path "C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe"
 Write-Host 'AIB Customization: endregion LotusNotes'
@@ -203,7 +218,8 @@ Install-App -Name 'AVDBG' -Path "C:\apps\AVDapps\AVDBG\Deploy-Application.exe"
 Write-Host 'AIB Customization: EndRegion AVDBG'
 #endregion AVDBG 
 
-Install-App -Name 'Notepad++' -Path "C:\apps\AVDapps\Notepad++\DistributionFiles\Windows\Open Software Notepad++ 8.4\Deploy-Application.exe"
+# install notepad++ via App Deploy Toolkit (8.9.1)
+Install-PSScript -Name 'Notepad++ 8.9.1' -ScriptPath "C:\apps\AVDapps\Notepad++\DistributionFiles\Windows\Open Software Notepad++ 8.9.1\Invoke-AppDeployToolkit.ps1" -Arguments @('-DeploymentType','Install')
 Write-Host 'AIB Customization: EndRegion Notepadd'
 #endregion Notepadd 
 
