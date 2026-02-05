@@ -1,108 +1,88 @@
 #Naveen.S
-#region Set logging 
-$logFile = "c:\windows\temp\" + (get-date -format 'yyyyMMdd') + '_AIBApplicationinstall.log'
+#region Set logging and helpers
+$logFile = "c:\windows\temp\" + (Get-Date -Format 'yyyyMMdd') + '_AIBApplicationinstall.log'
 function Write-Log {
-    Param($message)
-    Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $message" | Out-File -Encoding utf8 $logFile -Append
+    param(
+        [Parameter(Mandatory=$true)][string]$Message,
+        [ValidateSet('INFO','ERROR','WARN')][string]$Level = 'INFO'
+    )
+    $timestamp = Get-Date -Format 'yyyyMMdd HH:mm:ss'
+    "[$timestamp][$Level] $Message" | Out-File -Encoding utf8 $logFile -Append
+}
+
+# Generic wrapper to run a step with logging
+function Invoke-Step {
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][scriptblock]$Action
+    )
+    Write-Host "AIB Customization: $Name"
+    Write-Log "Starting: $Name"
+    try {
+        & $Action
+        Write-Log "Completed: $Name"
+        Write-Host "$Name completed successfully"
+    }
+    catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Log "Error in '$Name': $ErrorMessage" -Level ERROR
+        Write-Host "Error in '$Name': $ErrorMessage"
+    }
+}
+
+# Install an application via Deploy-Application.exe or any executable path
+function Install-App {
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][string]$Path,
+        [string[]]$Arguments
+    )
+    Invoke-Step -Name "Install $Name" -Action {
+        if (-not (Test-Path -LiteralPath $Path)) { throw "File not found: $Path" }
+        if ($Arguments -and $Arguments.Count -gt 0) {
+            Start-Process -FilePath $Path -ArgumentList $Arguments -Wait -ErrorAction Stop
+        } else {
+            Start-Process -FilePath $Path -Wait -ErrorAction Stop
+        }
+        Write-Log "$Name installed successfully"
+    }
+}
+
+# Install an MSI via msiexec
+function Install-MSI {
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)][string]$MsiPath,
+        [string[]]$Transforms,
+        [string]$LogPath
+    )
+    Invoke-Step -Name "Install $Name (MSI)" -Action {
+        if (-not (Test-Path -LiteralPath $MsiPath)) { throw "MSI not found: $MsiPath" }
+        $argList = @('/i', $MsiPath)
+        if ($Transforms -and $Transforms.Count -gt 0) { $argList += @('TRANSFORMS=' + ($Transforms -join ';')) }
+        $argList += '/qn'
+        if ($LogPath) { $argList += @('/l*v', $LogPath) }
+        Start-Process -FilePath msiexec.exe -ArgumentList $argList -Wait -ErrorAction Stop
+        Write-Log "$Name (MSI) installed successfully"
+    }
 }
 #endregion
 
-#install AIP
-Write-host 'AIB Customization: Install AIP'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\AIP\DistributionFiles\Windows\Microsoft AIP 2.13.49\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "AIP installed successfully"
-    write-host "AIP installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing AIP: $ErrorMessage"
-    Write-host "Error installing AIP: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: EndRegion AIP'
-#install JRE
-Write-host 'AIB Customization: Install JRE'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\JRE\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "JRE installed successfully"
-    write-host "JRE installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing JRE: $ErrorMessage"
-    write-host "Error installing JRE: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: EndRegion JRE'
-#install Netclean
-Write-host 'AIB Customization: Install NetClean'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\Netclean\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "Netclean installed successfully"
-    write-host "Netclean installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing Netclean: $ErrorMessage"
-    write-host "Error installing Netclean: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion NetClean'
+Install-App -Name 'AIP' -Path "C:\apps\AVDapps\AIP\DistributionFiles\Windows\Microsoft AIP 2.13.49\Deploy-Application.exe"
+Write-Host 'AIB Customization: EndRegion AIP'
+Install-App -Name 'JRE' -Path "C:\apps\AVDapps\JRE\Deploy-Application.exe"
+Write-Host 'AIB Customization: EndRegion JRE'
+Install-App -Name 'NetClean' -Path "C:\apps\AVDapps\Netclean\Deploy-Application.exe"
+Write-Host 'AIB Customization: endregion NetClean'
 
-#install TNS_names
-Write-host 'AIB Customization: Install TNS_Names'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\TNS_names\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "TNS_names installed successfully"
-    write-host "TNS_names installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing TNS_names: $ErrorMessage"
-    write-host "Error installing TNS_names: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion TNS_Names'
+Install-App -Name 'TNS_names' -Path "C:\apps\AVDapps\TNS_names\Deploy-Application.exe"
+Write-Host 'AIB Customization: endregion TNS_Names'
 
 
-# install javaapplet fullinstall bat file.
-Write-host 'AIB Customization: javaapplet fullinstall'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\AzulSystemsJavaApplet\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "Javaapplet installed successfully"
-    write-host "Javaapplet installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing Javaapplet: $ErrorMessage"
-    write-host "Error installing Javaapplet: $ErrorMessage"
-}
-# install siplus file.
-Write-host 'AIB Customization: siplus fullinstall'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\SIPlusPolicyCopy\DistributionFiles\Windows\Azul Systems Java Applet - SIPlus 1.0\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "siplus installed successfully"
-    write-host "siplus installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing siplus: $ErrorMessage"
-    write-host "Error installing siplus: $ErrorMessage"
-}
+Install-App -Name 'Javaapplet fullinstall' -Path "C:\apps\AVDapps\AzulSystemsJavaApplet\Deploy-Application.exe"
+Install-App -Name 'siplus fullinstall' -Path "C:\apps\AVDapps\SIPlusPolicyCopy\DistributionFiles\Windows\Azul Systems Java Applet - SIPlus 1.0\Deploy-Application.exe"
 
-# install KDPNetPhantomStarter file.
-Write-host 'AIB Customization: KDPNetPhantomStarter '
-try {
-    Start-Process -filepath "C:\apps\AVDapps\KDPNetPhantomStarter\DistributionFiles\Windows\Mindus SARL NetPhantom Starter SSL with Java 7.7\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "KDPNetPhantomStarter installed successfully"
-    write-host "KDPNetPhantomStarter installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing KDPNetPhantomStarter: $ErrorMessage"
-    write-host "Error installing KDPNetPhantomStarter: $ErrorMessage"
-}
+Install-App -Name 'KDPNetPhantomStarter' -Path "C:\apps\AVDapps\KDPNetPhantomStarter\DistributionFiles\Windows\Mindus SARL NetPhantom Starter SSL with Java 7.7\Deploy-Application.exe"
 
 
 # #install Cisco Secure Client 5.0.01242
@@ -120,49 +100,29 @@ catch {
 # #endregion
 # Write-host 'AIB Customization: endregion Cisco Secure Client 5.0.01242'
 
-#install VCC_Fonts
-Write-host 'AIB Customization: Install vcc_fonts'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\VCC_Fonts\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "VCC_Fonts installed successfully"
-    write-host "VCC_Fonts installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing VCC_Fonts: $ErrorMessage"
-    write-host "Error installing VCC_Fonts: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion vccfonts'
+Install-App -Name 'VCC_Fonts' -Path "C:\apps\AVDapps\VCC_Fonts\Deploy-Application.exe"
+Write-Host 'AIB Customization: endregion vccfonts'
 
-#install VCC_Templates
-Write-host 'AIB Customization: Install templates'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\VCC_Templates\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "VCC_Templates installed successfully"
-    write-host "VCC_Templates installed successfully"
-    New-Item -path "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name 'sharedtemplates' -Force
-    set-itemproperty "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name sharedtemplates -Value "C:\ProgramData\Microsoft\Windows\Corporate Templates"
-    write-log "VCC_Templates added to registry successfully"
-    write-host "VCC_Templates added to registry successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing VCC_Templates: $ErrorMessage"
-    write-host "Error installing VCC_Templates: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion templates'
+Install-App -Name 'SAP' -Path "C:\apps\AVDapps\SAP_1\Deploy-Application.exe"
+write-host 'AIB Customization: endregion SAP'
 
-#install #StartMenu
-try {
+Install-App -Name 'LotusNotes' -Path "C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe"
+Write-Host 'AIB Customization: endregion LotusNotes'
+
+
+
+
+Invoke-Step -Name 'Install templates' -Action {
+    Install-App -Name 'VCC_Templates' -Path "C:\apps\AVDapps\VCC_Templates\Deploy-Application.exe"
+    New-Item -Path "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name 'sharedtemplates' -Force | Out-Null
+    Set-ItemProperty "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name sharedtemplates -Value "C:\ProgramData\Microsoft\Windows\Corporate Templates"
+    Write-Log "VCC_Templates added to registry successfully"
+}
+Write-Host 'AIB Customization: endregion templates'
+
+Invoke-Step -Name 'Configure StartMenu layout' -Action {
     Import-StartLayout -LayoutPath "C:\apps\AVDapps\StartMenu\VCC-StartM.bin" -MountPath $env:SystemDrive\
-    write-log "Start menu layout successfully"
-    write-host "Start menu layout successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error setting up start menu: $ErrorMessage"
+    Write-Log "Start menu layout successfully"
 }
 #end region.
 
@@ -201,30 +161,15 @@ catch {
 # }
 # #endregion Azul Zulu Java
 # Write-host 'AIB Customization: endregion Azul Zulu Java'
-#Onboard Windows Defender ATP.
-Write-host 'AIB Customization: Configure Defender ATP'
-try{
-$dir='C:\WINDOWS\System32\GroupPolicy\Machine\Scripts\Startup'
-New-Item -Path $dir -ItemType Directory -force
-Copy-Item -path "c:\apps\AVDapps\Onboard ATP\Onboard-NonPersistentMachine.ps1" -Destination $dir
-write-log "Copying Onboard-NonPersistentMachine : success" 
+Invoke-Step -Name 'Configure Defender ATP' -Action {
+    $dir = 'C:\WINDOWS\System32\GroupPolicy\Machine\Scripts\Startup'
+    New-Item -Path $dir -ItemType Directory -Force | Out-Null
+    Copy-Item -Path "c:\apps\AVDapps\Onboard ATP\Onboard-NonPersistentMachine.ps1" -Destination $dir -Force
+    Write-Log "Copying Onboard-NonPersistentMachine : success"
+    Copy-Item -Path "c:\apps\AVDapps\Onboard ATP\WindowsDefenderATPOnboardingScript.cmd" -Destination $dir -Force
+    Write-Log "Copying atponboardingscript.cmd"
 }
-catch{
-    $ErrorMessage = $_.Exception.message
-    write-log "Error copying Onboard-NonPersistentMachine : $ErrorMessage" 
-    write-host "Error copying Onboard-NonPersistentMachine : $ErrorMessage" 
-}
-try {
-    Copy-Item -path "c:\apps\AVDapps\Onboard ATP\WindowsDefenderATPOnboardingScript.cmd" -Destination $dir
-    write-log "Copying atponboardingscript.cmd"
-}
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error copying WindowsDefenderATPOnboardingScript : $ErrorMessage" 
-    write-host "Error copying WindowsDefenderATPOnboardingScript : $ErrorMessage" 
-}
-#endregion of defender ATP.
-Write-host 'AIB Customization: endregion defender ATP'
+Write-Host 'AIB Customization: endregion defender ATP'
 
 # install optimized teams.
 # Write-host 'AIB Customization: install optimized teams'
@@ -240,101 +185,49 @@ Write-host 'AIB Customization: endregion defender ATP'
 #    write-host "Error installing AVD Teams: $ErrorMessage"
 # }
  #endregion of teams.
- Write-host 'AIB Customization: endregion optimized teams'
+ Write-Host 'AIB Customization: endregion optimized teams'
 
-#install VCC wallpaper
-Write-host 'AIB Customization: Configure Wallpaper'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\VCC_Wallpaper\Deploy-Application.exe" -Wait -ErrorAction Stop 
+Invoke-Step -Name 'Configure Wallpaper' -Action {
+    Install-App -Name 'VCC_Wallpaper' -Path "C:\apps\AVDapps\VCC_Wallpaper\Deploy-Application.exe"
     Start-Sleep -Seconds 5
-    write-log "VCC Wallpaper successfully"
-    write-host "VCC Wallpaper successfully"
-    New-Item -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force
-    set-itemproperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value "C:\windows\Themes\VCCWallpaper\Default.jpg"
-    write-log "VCC Wallpaper & lockscreen configured successfully."
-    write-host "VCC Wallpaper & lockscreen configured successfully."
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error setting wallpaper: $ErrorMessage"
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
+    Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value "C:\windows\Themes\VCCWallpaper\Default.jpg"
+    Write-Log "VCC Wallpaper & lockscreen configured successfully."
 }
 #endregion
 
-#install Chrome
-Write-host 'AIB Customization: Install Chrome'
-try {
-    Start-Process -filepath "C:\apps\AVDapps\Google Chrome 90.0.4430.212\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "Chrome installed successfully"
-    write-host "Chrome installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing Chrome: $ErrorMessage"
-    write-host "Error installing Chrome: $ErrorMessage"
-}
-Write-host 'AIB Customization: endregion chrome'
+Install-App -Name 'Chrome' -Path "C:\apps\AVDapps\Google Chrome 90.0.4430.212\Deploy-Application.exe"
+Write-Host 'AIB Customization: endregion chrome'
 
-#install AVDBG
-Write-host 'AIB Customization: Install AVDBG'
-try {
-  Start-Process -filepath "C:\apps\AVDapps\AVDBG\Deploy-Application.exe" -Wait -ErrorAction Stop
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    
-    write-host "Error AVDBG: $ErrorMessage"
-}
-
-Write-host 'AIB Customization: EndRegion AVDBG'
+Install-App -Name 'AVDBG' -Path "C:\apps\AVDapps\AVDBG\Deploy-Application.exe"
+Write-Host 'AIB Customization: EndRegion AVDBG'
 #endregion AVDBG 
 
-#install Notepadd
-Write-host 'AIB Customization: Install Notepadd'
-try {
-  Start-Process -filepath "C:\apps\AVDapps\Notepad++\DistributionFiles\Windows\Open Software Notepad++ 8.4\Deploy-Application.exe" -Wait -ErrorAction Stop
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    
-    write-host "Error Notepadd: $ErrorMessage"
-}
-
-Write-host 'AIB Customization: EndRegion Notepadd'
+Install-App -Name 'Notepad++' -Path "C:\apps\AVDapps\Notepad++\DistributionFiles\Windows\Open Software Notepad++ 8.4\Deploy-Application.exe"
+Write-Host 'AIB Customization: EndRegion Notepadd'
 #endregion Notepadd 
 
-#install Putty
-Write-host 'AIB Customization: Install Putty'
-try {
- Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Putty\OriginalFiles\putty-64bit-0.74-installer.msi", '/qn','/l*v',  "C:\Windows\Temp\Putty-INSTALL.log"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    
-    write-host "Error Putty: $ErrorMessage"
-}
-
-Write-host 'AIB Customization: EndRegion Putty'
+Install-MSI -Name 'Putty' -MsiPath "C:\apps\AVDapps\Putty\OriginalFiles\putty-64bit-0.74-installer.msi" -LogPath "C:\Windows\Temp\Putty-INSTALL.log"
+Write-Host 'AIB Customization: EndRegion Putty'
 #endregion Putty 
 
-#installfslogix
-write-host 'AIB customization: install fslogix'
-try{
-Invoke-WebRequest -Uri 'https://aka.ms/fslogix_download' -outfile   "C:\apps\AVDapps\fslogix.zip"
-Start-Sleep -Seconds 20
-Expand-Archive -Path "C:\apps\AVDapps\fslogix.zip" -DestinationPath "C:\apps\AVDapps\fslogix\"  -Force
-Invoke-Expression -Command "C:\apps\AVDapps\fslogix\x64\Release\FSLogixAppsSetup.exe /install /quiet /norestart"
+
+Invoke-Step -Name 'Install FSLogix' -Action {
+    $zipPath = "C:\apps\AVDapps\fslogix.zip"
+    $extractPath = "C:\apps\AVDapps\fslogix\"
+    Invoke-WebRequest -Uri 'https://aka.ms/fslogix_download' -OutFile $zipPath
+    Start-Sleep -Seconds 20
+    Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+    $setupExe = Join-Path $extractPath 'x64\Release\FSLogixAppsSetup.exe'
+    if (-not (Test-Path -LiteralPath $setupExe)) { throw "FSLogixAppsSetup.exe not found at $setupExe" }
+    Start-Process -FilePath $setupExe -ArgumentList '/install','/quiet','/norestart' -Wait -ErrorAction Stop
 }
-catch{
-    $ErrorMessage = $_.Exception.message
-    
-    write-host "Error FSLOGIX: $ErrorMessage"
-}
-write-host  'AIB customization: end region fslogix'
+Write-Host  'AIB customization: end region fslogix'
 #endregion fslogix
 
 
 #removal of inbuilt applications.
-$apps=@(     
+$apps = @(
     "Microsoft.Microsoft3DViewer" #Microsoft 3D Viewer
     "Microsoft.549981C3F5F10" #Microsoft Cortana
     "Microsoft.WindowsFeedbackHub" #Microsoft Feedback Hub
@@ -352,15 +245,20 @@ $apps=@(
     "Microsoft.MixedReality.Portal" #Mixed Reality
     "Microsoft.windowscommunicationsapps" #Mail
 )
-foreach ($app in $apps) {    
-    Write-host $app "Ready to remove"
-    Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage
-    Get-AppXProvisionedPackage -Online | Where-Object DisplayName -EQ $app | Remove-AppxProvisionedPackage -Online
-            
-    $appPath="$Env:LOCALAPPDATA\Packages\$app*"
-    Remove-Item $appPath -Recurse -Force -ErrorAction 0
+foreach ($app in $apps) {
+    Write-Host "$app Ready to remove"
+    try {
+        Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -ErrorAction SilentlyContinue
+        Get-AppXProvisionedPackage -Online | Where-Object DisplayName -EQ $app | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+        $appPath = "$Env:LOCALAPPDATA\Packages\$app*"
+        Remove-Item $appPath -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Log "Removed built-in app: $app"
+    }
+    catch {
+        Write-Log "Error removing built-in app: $app - $($_.Exception.Message)" -Level ERROR
+    }
 }
-write-host  "AIB: removal of applications"
+Write-Host  "AIB: removal of applications"
 #endregion of inbuilt applications.
 
 
