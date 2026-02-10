@@ -121,7 +121,7 @@ Write-Host 'AIB Customization: endregion vccfonts'
 Install-App -Name 'SAP' -Path "C:\apps\AVDapps\SAP_1\Deploy-Application.exe"
 Write-Host 'AIB Customization: endregion SAP'
 
-Install-App -Name 'LotusNotes' -Path "C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe"
+Install-App -Name 'LotusNotes' -Path "C:\apps\AVDapps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe"
 Write-Host 'AIB Customization: endregion LotusNotes'
 
 
