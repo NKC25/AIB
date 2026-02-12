@@ -260,6 +260,39 @@ catch {
 }
 #endregion
 
+#install SAP 
+Write-host 'AIB Customization: Install SAP'
+try {
+write-host " you are here where the issue persists"
+    Start-Process -filepath "C:\apps\AVDapps\SAP\DistributionFiles\Windows\SAP GUI 7.6 P8\Deploy-Application.exe" 
+    
+    write-log "SAP installed successfully"
+    write-host "SAP installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing SAP: $ErrorMessage"
+    write-host "Error installing SAP: $ErrorMessage"
+}
+
+Write-host 'AIB Customization: EndRegion SAP'
+#endregion SAP
+
+#install SAP latest 
+Write-host 'AIB Customization: Install SAP latest'
+try {
+    Start-Process -filepath "C:\apps\AVDapps\SAP_1\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "SAP latest installed successfully"
+    write-host "SAP latest installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing SAP latest: $ErrorMessage"
+    write-host "Error installing SAP latest: $ErrorMessage"
+}
+
+Write-host 'AIB Customization: EndRegion SAP latest'
+
 #install Chrome
 Write-host 'AIB Customization: Install Chrome'
 try {
@@ -287,6 +320,20 @@ catch {
 
 Write-host 'AIB Customization: EndRegion AVDBG'
 #endregion AVDBG 
+
+Write-host 'AIB Customization: Install Lotusnotes'
+try {
+    Start-Process -filepath "C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    write-log "Lotusnotes installed successfully"
+    write-host "Lotusnotes installed successfully"
+    }
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error installing Lotusnotes: $ErrorMessage"
+    write-host "Error installing Lotusnotes: $ErrorMessage"
+}
+#endregion
+Write-host 'AIB Customization: EndRegion Lotusnotes'
 
 #install Notepadd
 Write-host 'AIB Customization: Install Notepadd'
