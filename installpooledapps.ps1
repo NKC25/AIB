@@ -8,12 +8,12 @@ function Write-Log {
         [string]$message,
         [ValidateSet('INFO', 'WARNING', 'ERROR')]
         [string]$severity = 'INFO',
-        [switch]$writeHost
+        [switch]$WriteHost
     )
     $timestamp = Get-Date -Format 'yyyyMMdd HH:mm:ss'
     $logMessage = "$timestamp [$severity] $message"
     Write-Output $logMessage | Out-File -Encoding utf8 $logFile -Append
-    if ($writeHost) {
+    if ($WriteHost) {
         switch ($severity) {
             'ERROR' { Write-Host $logMessage -ForegroundColor Red }
             'WARNING' { Write-Host $logMessage -ForegroundColor Yellow }
@@ -25,20 +25,22 @@ function Write-Log {
 function Invoke-Installer {
     Param(
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$componentName,
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$installerPath,
         [string[]]$argumentList = @(),
         [string]$workingDirectory = $null
     )
     
-    Write-Log "Starting installation: $componentName" -severity 'INFO' -writeHost
+    Write-Log "Starting installation: $componentName" -severity 'INFO' -WriteHost
     Write-Host "AIB Customization: Install $componentName"
     
     # Validate installer path
     if (-not (Test-Path $installerPath)) {
         $errorMsg = "Installer not found: $installerPath"
-        Write-Log $errorMsg -severity 'ERROR' -writeHost
+        Write-Log $errorMsg -severity 'ERROR' -WriteHost
         $script:failureList += "$componentName - $errorMsg"
         return $false
     }
@@ -63,18 +65,18 @@ function Invoke-Installer {
         $exitCode = $process.ExitCode
         
         if ($exitCode -eq 0) {
-            Write-Log "$componentName installed successfully (Exit Code: $exitCode)" -severity 'INFO' -writeHost
+            Write-Log "$componentName installed successfully (Exit Code: $exitCode)" -severity 'INFO' -WriteHost
             return $true
         } else {
             $errorMsg = "$componentName installation completed with non-zero exit code: $exitCode"
-            Write-Log $errorMsg -severity 'WARNING' -writeHost
+            Write-Log $errorMsg -severity 'WARNING' -WriteHost
             $script:failureList += "$componentName - Exit Code: $exitCode"
             return $false
         }
     }
     catch {
         $errorMsg = "Error installing ${componentName}: $($_.Exception.Message)"
-        Write-Log $errorMsg -severity 'ERROR' -writeHost
+        Write-Log $errorMsg -severity 'ERROR' -WriteHost
         $script:failureList += "$componentName - $($_.Exception.Message)"
         return $false
     }
@@ -130,13 +132,17 @@ Write-host 'AIB Customization: Install templates'
 $templateInstalled = Invoke-Installer -componentName "VCC_Templates" -installerPath "C:\apps\AVDapps\VCC_Templates\Deploy-Application.exe"
 if ($templateInstalled) {
     try {
-        New-Item -path "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name 'sharedtemplates' -Force -ErrorAction Stop
-        set-itemproperty "HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General\" -Name sharedtemplates -Value "C:\ProgramData\Microsoft\Windows\Corporate Templates" -ErrorAction Stop
-        Write-Log "VCC_Templates added to registry successfully" -severity 'INFO' -writeHost
+        $regPath = "Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Office\16.0\Common\General"
+        # Ensure the parent path exists
+        if (-not (Test-Path $regPath)) {
+            New-Item -Path $regPath -Force -ErrorAction Stop | Out-Null
+        }
+        Set-ItemProperty -Path $regPath -Name 'sharedtemplates' -Value "C:\ProgramData\Microsoft\Windows\Corporate Templates" -ErrorAction Stop
+        Write-Log "VCC_Templates added to registry successfully" -severity 'INFO' -WriteHost
     }
     catch {
         $errorMsg = "Error configuring VCC_Templates registry: $($_.Exception.Message)"
-        Write-Log $errorMsg -severity 'ERROR' -writeHost
+        Write-Log $errorMsg -severity 'ERROR' -WriteHost
         $script:failureList += "VCC_Templates Registry - $($_.Exception.Message)"
     }
 }
@@ -148,16 +154,16 @@ $startMenuPath = "C:\apps\AVDapps\StartMenu\VCC-StartM.bin"
 if (Test-Path $startMenuPath) {
     try {
         Import-StartLayout -LayoutPath $startMenuPath -MountPath $env:SystemDrive\ -ErrorAction Stop
-        Write-Log "Start menu layout imported successfully" -severity 'INFO' -writeHost
+        Write-Log "Start menu layout imported successfully" -severity 'INFO' -WriteHost
     }
     catch {
         $errorMsg = "Error setting up start menu: $($_.Exception.Message)"
-        Write-Log $errorMsg -severity 'ERROR' -writeHost
+        Write-Log $errorMsg -severity 'ERROR' -WriteHost
         $script:failureList += "Start Menu Layout - $($_.Exception.Message)"
     }
 } else {
     $errorMsg = "Start menu layout file not found: $startMenuPath"
-    Write-Log $errorMsg -severity 'WARNING' -writeHost
+    Write-Log $errorMsg -severity 'WARNING' -WriteHost
     $script:failureList += "Start Menu Layout - File not found"
 }
 #end region.
@@ -204,17 +210,17 @@ try {
     # Ensure destination directory exists
     if (-not (Test-Path $defenderDir)) {
         New-Item -Path $defenderDir -ItemType Directory -Force -ErrorAction Stop | Out-Null
-        Write-Log "Created Defender ATP directory: $defenderDir" -severity 'INFO' -writeHost
+        Write-Log "Created Defender ATP directory: $defenderDir" -severity 'INFO' -WriteHost
     }
     
     # Copy Onboard-NonPersistentMachine.ps1
     $sourceFile1 = "c:\apps\AVDapps\Onboard ATP\Onboard-NonPersistentMachine.ps1"
     if (Test-Path $sourceFile1) {
         Copy-Item -Path $sourceFile1 -Destination $defenderDir -Force -ErrorAction Stop
-        Write-Log "Copying Onboard-NonPersistentMachine.ps1: success" -severity 'INFO' -writeHost
+        Write-Log "Copying Onboard-NonPersistentMachine.ps1: success" -severity 'INFO' -WriteHost
     } else {
         $errorMsg = "Source file not found: $sourceFile1"
-        Write-Log $errorMsg -severity 'WARNING' -writeHost
+        Write-Log $errorMsg -severity 'WARNING' -WriteHost
         $script:failureList += "Defender ATP Onboard-NonPersistentMachine - File not found"
     }
     
@@ -222,16 +228,16 @@ try {
     $sourceFile2 = "c:\apps\AVDapps\Onboard ATP\WindowsDefenderATPOnboardingScript.cmd"
     if (Test-Path $sourceFile2) {
         Copy-Item -Path $sourceFile2 -Destination $defenderDir -Force -ErrorAction Stop
-        Write-Log "Copying WindowsDefenderATPOnboardingScript.cmd: success" -severity 'INFO' -writeHost
+        Write-Log "Copying WindowsDefenderATPOnboardingScript.cmd: success" -severity 'INFO' -WriteHost
     } else {
         $errorMsg = "Source file not found: $sourceFile2"
-        Write-Log $errorMsg -severity 'WARNING' -writeHost
+        Write-Log $errorMsg -severity 'WARNING' -WriteHost
         $script:failureList += "Defender ATP OnboardingScript - File not found"
     }
 }
 catch {
     $errorMsg = "Error configuring Defender ATP: $($_.Exception.Message)"
-    Write-Log $errorMsg -severity 'ERROR' -writeHost
+    Write-Log $errorMsg -severity 'ERROR' -WriteHost
     $script:failureList += "Defender ATP - $($_.Exception.Message)"
 }
 #endregion of defender ATP.
@@ -259,13 +265,13 @@ $wallpaperInstalled = Invoke-Installer -componentName "VCC_Wallpaper" -installer
 if ($wallpaperInstalled) {
     try {
         Start-Sleep -Seconds 5
-        New-Item -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force -ErrorAction Stop | Out-Null
-        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value "C:\windows\Themes\VCCWallpaper\Default.jpg" -ErrorAction Stop
-        Write-Log "VCC Wallpaper & lockscreen configured successfully" -severity 'INFO' -writeHost
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force -ErrorAction Stop | Out-Null
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value "C:\windows\Themes\VCCWallpaper\Default.jpg" -ErrorAction Stop
+        Write-Log "VCC Wallpaper & lockscreen configured successfully" -severity 'INFO' -WriteHost
     }
     catch {
         $errorMsg = "Error configuring wallpaper registry: $($_.Exception.Message)"
-        Write-Log $errorMsg -severity 'ERROR' -writeHost
+        Write-Log $errorMsg -severity 'ERROR' -WriteHost
         $script:failureList += "VCC Wallpaper Registry - $($_.Exception.Message)"
     }
 }
@@ -296,19 +302,20 @@ try {
     
     # Download FSLogix
     Invoke-WebRequest -Uri 'https://aka.ms/fslogix_download' -OutFile $fslogixZip -ErrorAction Stop
-    Write-Log "FSLogix downloaded successfully" -severity 'INFO' -writeHost
+    Write-Log "FSLogix downloaded successfully" -severity 'INFO' -WriteHost
+    # Wait for file system to settle after download
     Start-Sleep -Seconds 20
     
     # Extract FSLogix
     Expand-Archive -Path $fslogixZip -DestinationPath $fslogixExtract -Force -ErrorAction Stop
-    Write-Log "FSLogix extracted successfully" -severity 'INFO' -writeHost
+    Write-Log "FSLogix extracted successfully" -severity 'INFO' -WriteHost
     
     # Install FSLogix using Invoke-Installer
     Invoke-Installer -componentName "FSLogix" -installerPath $fslogixInstaller -argumentList @('/install', '/quiet', '/norestart')
 }
 catch {
     $errorMsg = "Error installing FSLogix: $($_.Exception.Message)"
-    Write-Log $errorMsg -severity 'ERROR' -writeHost
+    Write-Log $errorMsg -severity 'ERROR' -WriteHost
     $script:failureList += "FSLogix - $($_.Exception.Message)"
 }
 write-host 'AIB customization: end region fslogix'
@@ -317,7 +324,7 @@ write-host 'AIB customization: end region fslogix'
 
 #removal of inbuilt applications.
 Write-Host "AIB Customization: Starting removal of inbuilt applications"
-Write-Log "Starting removal of inbuilt applications" -severity 'INFO' -writeHost
+Write-Log "Starting removal of inbuilt applications" -severity 'INFO' -WriteHost
 
 $apps = @(     
     "Microsoft.Microsoft3DViewer" #Microsoft 3D Viewer
@@ -398,7 +405,7 @@ foreach ($app in $apps) {
 }
 
 Write-Host "AIB: Completed removal of inbuilt applications"
-Write-Log "Completed removal of inbuilt applications" -severity 'INFO' -writeHost
+Write-Log "Completed removal of inbuilt applications" -severity 'INFO' -WriteHost
 #endregion of inbuilt applications.
 
 #region Summary
