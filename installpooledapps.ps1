@@ -104,22 +104,6 @@ catch {
     write-host "Error installing KDPNetPhantomStarter: $ErrorMessage"
 }
 
-
-# #install Cisco Secure Client 5.0.01242
-# Write-host 'AIB Customization: Install Cisco Secure Client 5.0.01242'
-# try {
-#     Start-Process -filepath "C:\apps\AVDapps\Cisco Secure Client 5.0.01242\Deploy-Application.exe" -Wait -ErrorAction Stop 
-#     write-log "Cisco Secure Client 5.0.01242 installed successfully"
-#     write-host "Cisco Secure Client 5.0.01242 installed successfully"
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installing Cisco Secure Client 5.0.01242: $ErrorMessage"
-#     write-host "Error installing Cisco Secure Client 5.0.01242: $ErrorMessage"
-# }
-# #endregion
-# Write-host 'AIB Customization: endregion Cisco Secure Client 5.0.01242'
-
 #install VCC_Fonts
 Write-host 'AIB Customization: Install vcc_fonts'
 try {
@@ -166,40 +150,6 @@ catch {
 }
 #end region.
 
-
-
-# #install Java
-# Write-host 'AIB Customization: Install Java'
-# try {
-    
-#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Java_8\source\jre1.8.0_72.msi", TRANSFORMS="C:\apps\AVDapps\Java_8\source\Java_8_Update_72_x86_8.0.720.15_W10.mst" , '/qn','/l*v',  "C:\Windows\Temp\Java-INSTALL.log"
-#     Write-Log "successfully installed Java"
-#     Write-host "successfully installed Java"
-
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installed Java: $ErrorMessage"
-#     Write-Log "Error installed Java: $ErrorMessage"
-# }
-
-# #endregion Java
-# Write-host 'AIB Customization: endregion Java'
-
-#install Azul Zulu JDK
-# Write-host 'AIB Customization: Install Azul Zulu Java'
-# try {
-#     Start-Process -filepath msiexec.exe -Wait -ErrorAction Stop -ArgumentList '/i', "C:\apps\AVDapps\Azul_Zulu\zulu25.30.17-ca-jdk25.0.1-win_x64.msi", '/qn','/l*v',  "C:\Windows\Temp\Azul_Zulu-Java-INSTALL.log"
-#     Write-Log "successfully installed Azul Zulu Java"
-#     Write-host "successfully installed Azul Zulu Java"
-
-#     }
-# catch {
-#     $ErrorMessage = $_.Exception.message
-#     write-log "Error installed Azul Zulu Java: $ErrorMessage"
-#     Write-Log "Error installed Azul Zulu Java: $ErrorMessage"
-# }
-# #endregion Azul Zulu Java
 # Write-host 'AIB Customization: endregion Azul Zulu Java'
 #Onboard Windows Defender ATP.
 Write-host 'AIB Customization: Configure Defender ATP'
@@ -226,19 +176,6 @@ catch {
 #endregion of defender ATP.
 Write-host 'AIB Customization: endregion defender ATP'
 
-# install optimized teams.
-# Write-host 'AIB Customization: install optimized teams'
-
-# try {
-#   Start-Process -filepath "C:\apps\AVDapps\AVDTeams\DistributionFiles\Windows\Microsoft New Teams for VDI 2.0\Deploy-Application.exe" -Wait -ErrorAction Stop 
-#   write-log "AVD Teams installed successfully."
-#   write-host "AVD Teams installed successfully."
-#     }
-# catch {
-#   $ErrorMessage = $_.Exception.message
-#    write-log "Error installing AVD Teams: $ErrorMessage"
-#    write-host "Error installing AVD Teams: $ErrorMessage"
-# }
  #endregion of teams.
  Write-host 'AIB Customization: endregion optimized teams'
 
@@ -323,7 +260,7 @@ Write-host 'AIB Customization: EndRegion AVDBG'
 
 Write-host 'AIB Customization: Install Lotusnotes'
 try {
-    Start-Process -filepath "C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe" -Wait -ErrorAction Stop 
+    Start-Process -filepath "C:\apps\AVDapps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe" -Wait -ErrorAction Stop 
     write-log "Lotusnotes installed successfully"
     write-host "Lotusnotes installed successfully"
     }
