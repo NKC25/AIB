@@ -264,6 +264,7 @@ Write-host 'AIB Customization: Configure Wallpaper'
 $wallpaperInstalled = Invoke-Installer -componentName "VCC_Wallpaper" -installerPath "C:\apps\AVDapps\VCC_Wallpaper\Deploy-Application.exe"
 if ($wallpaperInstalled) {
     try {
+        # Wait for wallpaper files to be fully deployed before configuring registry
         Start-Sleep -Seconds 5
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force -ErrorAction Stop | Out-Null
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value "C:\windows\Themes\VCCWallpaper\Default.jpg" -ErrorAction Stop
