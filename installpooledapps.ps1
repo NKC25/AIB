@@ -86,6 +86,9 @@ function Invoke-Installer {
 #install AIP
 Invoke-Installer -componentName "AIP" -installerPath "C:\apps\AVDapps\AIP\DistributionFiles\Windows\Microsoft AIP 2.13.49\Deploy-Application.exe"
 Write-host 'AIB Customization: EndRegion AIP'
+#install KDP
+Invoke-Installer -componentName "KDP" -installerPath "C:\apps\AVDapps\KDPNetPhantomStarter\DistributionFiles\Windows\Mindus SARL NetPhantom Starter SSL with Java 7.7\Deploy-Application.exe"
+Write-host 'AIB Customization: EndRegion KDP'
 #install JRE
 Invoke-Installer -componentName "JRE" -installerPath "C:\apps\AVDapps\JRE\Deploy-Application.exe"
 Write-host 'AIB Customization: EndRegion JRE'
