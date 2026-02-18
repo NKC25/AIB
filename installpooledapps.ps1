@@ -86,12 +86,11 @@ function Invoke-Installer {
 #install AIP
 Invoke-Installer -componentName "AIP" -installerPath "C:\apps\AVDapps\AIP\DistributionFiles\Windows\Microsoft AIP 2.13.49\Deploy-Application.exe"
 Write-host 'AIB Customization: EndRegion AIP'
-#install KDP
-Invoke-Installer -componentName "KDP" -installerPath "C:\apps\AVDapps\KDPNetPhantomStarter\DistributionFiles\Windows\Mindus SARL NetPhantom Starter SSL with Java 7.7\Deploy-Application.exe"
-Write-host 'AIB Customization: EndRegion KDP'
+
 #install JRE
 Invoke-Installer -componentName "JRE" -installerPath "C:\apps\AVDapps\JRE\Deploy-Application.exe"
 Write-host 'AIB Customization: EndRegion JRE'
+
 #install Netclean
 Invoke-Installer -componentName "NetClean" -installerPath "C:\apps\AVDapps\Netclean\Deploy-Application.exe"
 Write-host 'AIB Customization: endregion NetClean'
@@ -99,6 +98,10 @@ Write-host 'AIB Customization: endregion NetClean'
 #install TNS_names
 Invoke-Installer -componentName "TNS_names" -installerPath "C:\apps\AVDapps\TNS_names\Deploy-Application.exe"
 Write-host 'AIB Customization: endregion TNS_Names'
+
+#install Lotus Notes
+Invoke-Installer -componentName "LotusNotes" -installerPath "C:\apps\AVDapps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe"
+Write-host 'AIB Customization: EndRegion LotusNotes'
 
 
 # install javaapplet fullinstall bat file.
@@ -284,6 +287,14 @@ if ($wallpaperInstalled) {
 #install Chrome
 Invoke-Installer -componentName "Chrome" -installerPath "C:\apps\AVDapps\Google Chrome 90.0.4430.212\Deploy-Application.exe"
 Write-host 'AIB Customization: endregion chrome'
+
+#install SAP
+Invoke-Installer -componentName "SAP" -installerPath "C:\apps\AVDapps\SAP\DistributionFiles\Windows\SAP GUI 7.6 P8\Deploy-Application.exe"
+Write-host 'AIB Customization: EndRegion SAP'
+
+#install SAP Latest
+Invoke-Installer -componentName "SAP_Latest" -installerPath "C:\apps\AVDapps\SAP_1\Deploy-Application.exe"
+Write-host 'AIB Customization: EndRegion SAP Latest'
 
 #install AVDBG
 Invoke-Installer -componentName "AVDBG" -installerPath "C:\apps\AVDapps\AVDBG\Deploy-Application.exe"
