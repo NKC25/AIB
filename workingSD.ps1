@@ -33,7 +33,8 @@ function Invoke-Installer {
         [ValidateNotNullOrEmpty()]
         [string]$installerPath,
         [string[]]$argumentList = @(),
-        [string]$workingDirectory = $null
+        [string]$workingDirectory = $null,
+        [int[]]$successExitCodes = @(0)
     )
 
     Write-Log "Starting installation: $componentName" -severity 'INFO' -WriteHost
@@ -65,8 +66,12 @@ function Invoke-Installer {
         $process = Start-Process @processParams
         $exitCode = $process.ExitCode
 
-        if ($exitCode -eq 0) {
-            Write-Log "$componentName installed successfully (Exit Code: $exitCode)" -severity 'INFO' -WriteHost
+        if ($successExitCodes -contains $exitCode) {
+            if ($exitCode -eq 0) {
+                Write-Log "$componentName installed successfully (Exit Code: $exitCode)" -severity 'INFO' -WriteHost
+            } else {
+                Write-Log "$componentName completed with accepted non-zero exit code: $exitCode" -severity 'WARNING' -WriteHost
+            }
             return $true
         }
 
@@ -166,7 +171,7 @@ Invoke-Installer -componentName 'TNS_names' -installerPath 'C:\apps\AVD_SD_Apps\
 Write-Host 'AIB Customization: EndRegion TNS_Names'
 
 #install Lotus Notes
-Invoke-Installer -componentName 'LotusNotes' -installerPath 'C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe'
+Invoke-Installer -componentName 'LotusNotes' -installerPath 'C:\apps\AVD_SD_Apps\LotusNotes\DistributionFiles\Windows\HCL Lotus Notes 11.0.1\Deploy-Application.exe' -successExitCodes @(0, -1)
 Write-Host 'AIB Customization: EndRegion LotusNotes'
 
 # #install Cisco Secure Client 5.0.01242
@@ -337,17 +342,17 @@ Write-Host 'AIB Customization: EndRegion Chrome'
 Invoke-Installer -componentName 'CPP client' -installerPath 'C:\apps\AVD_SD_Apps\CPP client\DistributionFiles\Windows\VCC CPP Client 4.0.0.1 M2\Deploy-Application.exe'
 Write-Host 'AIB Customization: EndRegion CPP client'
 
-#install IBM 3270 hosts
-Invoke-Installer -componentName 'IBM_3270_hosts' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a2\source\Configuration\3270_hosts.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\Configuration\3270_hosts.mst', '/qn', '/l*v', 'c:\windows\temp\3270_hosts.log')
-Write-Host 'AIB Customization: EndRegion IBM 3270 hosts'
+# #install IBM 3270 hosts
+# Invoke-Installer -componentName 'IBM_3270_hosts' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a2\source\Configuration\3270_hosts.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\Configuration\3270_hosts.mst', '/qn', '/l*v', 'c:\windows\temp\3270_hosts.log')
+# Write-Host 'AIB Customization: EndRegion IBM 3270 hosts'
 
-#install IBM cdec
-Invoke-Installer -componentName 'IBM_cdec' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a2\source\cdec\cdec.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\cdec\cdec.mst', '/qn', '/l*v', 'c:\windows\temp\cdec.log')
-Write-Host 'AIB Customization: EndRegion IBM cdec'
+# #install IBM cdec
+# Invoke-Installer -componentName 'IBM_cdec' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a2\source\cdec\cdec.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\cdec\cdec.mst', '/qn', '/l*v', 'c:\windows\temp\cdec.log')
+# Write-Host 'AIB Customization: EndRegion IBM cdec'
 
-#install IBM Personal Communications
-Invoke-Installer -componentName 'IBM_Personal_Communications' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a3\source\IBM Personal Communications.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\IBM_Personnal_Communications_13.0.0.mst', '/qn', '/l*v', 'c:\windows\temp\ibm.log')
-Write-Host 'AIB Customization: EndRegion IBM Personal Communications'
+# #install IBM Personal Communications
+# Invoke-Installer -componentName 'IBM_Personal_Communications' -installerPath 'msiexec.exe' -argumentList @('/i', 'C:\apps\AVD_SD_Apps\IBM\a3\source\IBM Personal Communications.msi', 'TRANSFORMS=C:\apps\AVD_SD_Apps\IBM\a3\source\IBM_Personnal_Communications_13.0.0.mst', '/qn', '/l*v', 'c:\windows\temp\ibm.log')
+# Write-Host 'AIB Customization: EndRegion IBM Personal Communications'
 
 #install AVDBG
 Invoke-Installer -componentName 'AVDBG' -installerPath 'C:\apps\AVD_SD_Apps\AVDBG\Deploy-Application.exe'
