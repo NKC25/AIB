@@ -39,36 +39,36 @@ catch {
 #endregion
 
 
-#install Netclean
-Write-host 'AIB Customization: Install NetClean'
-try {
-    Start-Process -filepath "C:\apps\AVD_SD_Apps\Netclean\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "Netclean installed successfully"
-    write-host "Netclean installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing Netclean: $ErrorMessage"
-    write-host "Error installing Netclean: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion NetClean'
+# #install Netclean
+# Write-host 'AIB Customization: Install NetClean'
+# try {
+#     Start-Process -filepath "C:\apps\AVD_SD_Apps\Netclean\Deploy-Application.exe" -Wait -ErrorAction Stop 
+#     write-log "Netclean installed successfully"
+#     write-host "Netclean installed successfully"
+#     }
+# catch {
+#     $ErrorMessage = $_.Exception.message
+#     write-log "Error installing Netclean: $ErrorMessage"
+#     write-host "Error installing Netclean: $ErrorMessage"
+# }
+# #endregion
+# Write-host 'AIB Customization: endregion NetClean'
 
 
-#install TNS_names
-Write-host 'AIB Customization: Install TNS_Names'
-try {
-    Start-Process -filepath "C:\apps\AVD_SD_Apps\TNS_names\Deploy-Application.exe" -Wait -ErrorAction Stop 
-    write-log "TNS_names installed successfully"
-    write-host "TNS_names installed successfully"
-    }
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error installing TNS_names: $ErrorMessage"
-    write-host "Error installing TNS_names: $ErrorMessage"
-}
-#endregion
-Write-host 'AIB Customization: endregion TNS_Names'
+# #install TNS_names
+# Write-host 'AIB Customization: Install TNS_Names'
+# try {
+#     Start-Process -filepath "C:\apps\AVD_SD_Apps\TNS_names\Deploy-Application.exe" -Wait -ErrorAction Stop 
+#     write-log "TNS_names installed successfully"
+#     write-host "TNS_names installed successfully"
+#     }
+# catch {
+#     $ErrorMessage = $_.Exception.message
+#     write-log "Error installing TNS_names: $ErrorMessage"
+#     write-host "Error installing TNS_names: $ErrorMessage"
+# }
+# #endregion
+# Write-host 'AIB Customization: endregion TNS_Names'
 
 Write-host 'AIB Customization: Install Lotusnotes'
 try {
@@ -244,7 +244,7 @@ Write-host 'AIB Customization: endregion defender ATP'
 #     write-host "Error installing AVD Teams: $ErrorMessage"
 # }
 #endregion of teams.
-Write-host 'AIB Customization: endregion optimized teams'
+# Write-host 'AIB Customization: endregion optimized teams'
 
 #endregion SAP
 
